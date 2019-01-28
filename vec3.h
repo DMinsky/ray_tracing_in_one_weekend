@@ -97,6 +97,10 @@ inline vec3 cross(const vec3 &v1, const vec3 &v2) {
 		     (v1.e[0]*v2.e[1] - v1.e[1]*v2.e[0]) );
 }
 
+inline vec3 reflect(const vec3& v, const vec3& n) {
+	return v - 2*dot(v, n) * n;
+}
+
 inline vec3& vec3::operator+=(const vec3 &v) {
 	e[0] += v.e[0];
 	e[1] += v.e[1];
@@ -128,6 +132,14 @@ inline vec3& vec3::operator/=(const float t) {
 
 inline vec3 unit_vector(vec3 v) {
 	return v / v.length();
+}
+
+vec3 random_in_unit_sphere() {
+	vec3 p;
+	do {
+		p = 2.0 * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1); 
+	} while (p.squared_length() >= 1.0);
+	return p;
 }
 
 #endif

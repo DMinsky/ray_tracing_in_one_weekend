@@ -97,8 +97,30 @@ inline vec3 cross(const vec3 &v1, const vec3 &v2) {
 		     (v1.e[0]*v2.e[1] - v1.e[1]*v2.e[0]) );
 }
 
+inline vec3 unit_vector(vec3 v) {
+	return v / v.length();
+}
+
 inline vec3 reflect(const vec3& v, const vec3& n) {
 	return v - 2*dot(v, n) * n;
+}
+
+inline bool refract(const vec3& v, const vec3& n, float ni_over_nt, vec3& refracted) {
+	vec3 uv = unit_vector(v);
+	float dt = dot(uv, n);
+	float discriminant = 1.0f - ni_over_nt * ni_over_nt * (1.0f - dt * dt);
+	if (discriminant > 0.0f) {
+		refracted = ni_over_nt * (uv - n * dt) - n * sqrt(discriminant);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+inline float schlick(float cosine, float ref_idx) {
+	float r0 = (1.0f-ref_idx) / (1.0f+ref_idx);
+	r0 = r0*r0;
+	return r0 + (1.0f-r0)*pow((1.0f-cosine), 5.0f);
 }
 
 inline vec3& vec3::operator+=(const vec3 &v) {
@@ -128,10 +150,6 @@ inline vec3& vec3::operator/=(const float t) {
 	e[1] *= k;
 	e[2] *= k;
 	return *this;
-}
-
-inline vec3 unit_vector(vec3 v) {
-	return v / v.length();
 }
 
 vec3 random_in_unit_sphere() {
